@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conjugador Warao</title>
+    <style>
+        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; }
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, button { width: 100%; padding: 8px; box-sizing: border-box; }
+        #resultado { margin-top: 20px; font-weight: bold; font-size: 1.2em; color: #1a5fb4; }
+    </style>
+</head>
+<body>
+
+    <h2>Conjugador de Verbos Warao</h2>
+
+    <div class="field">
+        <label for="raiz">Raíz del verbo (ej. naru):</label>
+        <input type="text" id="raiz" placeholder="Escribe la raíz del verbo...">
+    </div>
+
+    <div class="field">
+        <label for="tiempo">Tiempo / Modo:</label>
+        <select id="tiempo">
+            <option value="pres">Presente (-ya)</option>
+            <option value="pas_rec">Pasado reciente (-ae)</option>
+            <option value="pas_rem">Pasado remoto (-a)</option>
+            <option value="fut">Futuro (-te)</option>
+            <option value="imp_sing">Imperativo singular (-nu)</option>
+            <option value="imp_pl">Imperativo plural (-kutu)</option>
+            <option value="neg_pres">Negación Presente/Pasado (-naja)</option>
+            <option value="neg_fut">Negación Futuro (-tekuane)</option>
+        </select>
+    </div>
+
+    <button onclick="conjugar()">Conjugar Verbo</button>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Reglas de sufijos
+        const sufijos = {
+            'pres': 'ya',
+            'pas_rec': 'ae',
+            'pas_rem': 'a',
+            'fut': 'te',
+            'imp_sing': 'nu',
+            'imp_pl': 'kutu',
+            'neg_pres': 'naja',
+            'neg_fut': 'tekuane'
+        };
+
+        function conjugar() {
+            let raiz = document.getElementById('raiz').value.trim().toLowerCase();
+            let tiempo = document.getElementById('tiempo').value;
+            let resultadoDiv = document.getElementById('resultado');
+
+            if (!raiz) {
+                resultadoDiv.innerText = "Por favor ingresa una raíz verbal.";
+                return;
+            }
+
+            // Regla morfofonémica simple: si termina en vocal idéntica al sufijo, une o mantiene
+            let sufijo = sufijos[tiempo];
+            let conjugacion = raiz + "-" + sufijo;
+
+            // Formato final limpia (sin guion en el despliegue final si prefieres)
+            let verboConjugado = raiz + sufijo;
+
+            resultadoDiv.innerText = `Resultado: ${verboConjugado} (${conjugacion})`;
+        }
+    </script>
+</body>
+</html>
