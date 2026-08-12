@@ -3,85 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conjugador Warao</title>
+    <title>Diccionario y Conjugador Warao</title>
     <style>
-        body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; }
-        .field { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, button { width: 100%; padding: 8px; box-sizing: border-box; }
-        #resultado { margin-top: 20px; font-weight: bold; font-size: 1.2em; color: #1a5fb4; }
+        :root {
+            --verde-selva: #1e4d2b;
+            --verde-hoja: #2e7d32;
+            --aguar-orinoco: #00695c;
+            --tierra-madera: #4e342e;
+            --arena-clara: #f4f1ea;
+            --dorado-sol: #d97706;
+            --blanco-tarjeta: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--arena-clara);
+            background-image: radial-gradient(#d7ccc8 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #2c3e50;
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Encabezado Principal */
+        .header-warao {
+            background: linear-gradient(135deg, var(--verde-selva), var(--aguar-orinoco));
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            border-bottom: 5px solid var(--dorado-sol);
+            margin-bottom: 25px;
+        }
+
+        .header-warao h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .header-warao p {
+            margin: 5px 0 0;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        /* Tarjetas con efecto de relieve (Neumorfismo suave) */
+        .card {
+            background: var(--blanco-tarjeta);
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--tierra-madera);
+            border-bottom: 2px dashed var(--aguar-orinoco);
+            padding-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .field { margin-bottom: 14px; }
+        
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            color: var(--tierra-madera);
+            font-size: 0.9rem;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 10px 12px; 
+            box-sizing: border-box; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            background-color: #fafafa;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--aguar-orinoco);
+            box-shadow: 0 0 8px rgba(0, 105, 92, 0.2);
+            background-color: #fff;
+        }
+
+        /* Botones con sombras y relieve 3D */
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: linear-gradient(180deg, var(--verde-hoja), var(--verde-selva));
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 0.95rem;
+            cursor: pointer; 
+            box-shadow: 0 4px 0 #14331c, 0 5px 10px rgba(0,0,0,0.2);
+            transition: all 0.1s ease;
+        }
+
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #14331c, 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-descargar { 
+            background: linear-gradient(180deg, #0288d1, #01579b);
+            box-shadow: 0 4px 0 #002f6c, 0 5px 10px rgba(0,0,0,0.2);
+            margin-top: 12px; 
+        }
+
+        .btn-descargar:active {
+            box-shadow: 0 1px 0 #002f6c, 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Tabla de Verbos */
+        table { 
+            width: 100%; 
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px; 
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        th, td { padding: 12px; text-align: left; }
+
+        th { 
+            background-color: var(--aguar-orinoco); 
+            color: white; 
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) { background-color: #f4f8f7; }
+        tr:hover { background-color: #e8f5e9; }
+
+        /* Cuadro de Resultado con Relieve */
+        .resultado-box { 
+            margin-top: 18px; 
+            padding: 15px; 
+            background: #e0f2f1; 
+            border-left: 6px solid var(--aguar-orinoco); 
+            border-radius: 6px;
+            font-weight: bold; 
+            font-size: 1.1em; 
+            color: var(--verde-selva);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
 
-    <h2>Conjugador de Verbos Warao</h2>
-
-    <div class="field">
-        <label for="raiz">Raíz del verbo (ej. naru):</label>
-        <input type="text" id="raiz" placeholder="Escribe la raíz del verbo...">
+    <!-- ENCABEZADO CULTURAL -->
+    <div class="header-warao">
+        <h1>Warao A-Rai Kobo</h1>
+        <p>Sistema Gramatical, Diccionario y Conjugador Interactivo</p>
     </div>
 
-    <div class="field">
-        <label for="tiempo">Tiempo / Modo:</label>
-        <select id="tiempo">
-            <option value="pres">Presente (-ya)</option>
-            <option value="pas_rec">Pasado reciente (-ae)</option>
-            <option value="pas_rem">Pasado remoto (-a)</option>
-            <option value="fut">Futuro (-te)</option>
-            <option value="imp_sing">Imperativo singular (-nu)</option>
-            <option value="imp_pl">Imperativo plural (-kutu)</option>
-            <option value="neg_pres">Negación Presente/Pasado (-naja)</option>
-            <option value="neg_fut">Negación Futuro (-tekuane)</option>
-        </select>
+    <!-- 1. FORMULARIO DE INGRESO -->
+    <div class="card">
+        <h3>1. Registrar Nuevo Verbo</h3>
+
+        <div class="field">
+            <label for="inputWarao">Verbo en Warao:</label>
+            <input type="text" id="inputWarao" placeholder="Ej. narú">
+        </div>
+
+        <div class="field">
+            <label for="inputRaiz">Raíz del verbo:</label>
+            <input type="text" id="inputRaiz" placeholder="Ej. naru">
+        </div>
+
+        <div class="field">
+            <label for="inputEspanol">Significado en español:</label>
+            <input type="text" id="inputEspanol" placeholder="Ej. ir">
+        </div>
+
+        <button type="button" onclick="guardarVerbo()">Guardar Verbo</button>
+        <button type="button" class="btn-descargar" onclick="descargarJSON()">Descargar verbos.json para GitHub</button>
     </div>
 
-    <button onclick="conjugar()">Conjugar Verbo</button>
+    <!-- 2. CONJUGADOR -->
+    <div class="card">
+        <h3>2. Conjugación Gramatical</h3>
 
-    <div id="resultado"></div>
+        <div class="field">
+            <label for="selectVerbo">Selecciona un verbo:</label>
+            <select id="selectVerbo">
+                <option value="">Cargando verbos...</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="selectTiempo">Tiempo verbal / Modo:</label>
+            <select id="selectTiempo">
+                <option value="ya">Presente (-ya)</option>
+                <option value="ae">Pasado reciente (-ae)</option>
+                <option value="a">Pasado remoto (-a)</option>
+                <option value="te">Futuro (-te)</option>
+                <option value="yaja">Pasado imperfecto (-yaja)</option>
+                <option value="nu">Imperativo singular (-nu)</option>
+                <option value="kutu">Imperativo plural (-kutu)</option>
+                <option value="naja">Negación Presente/Pasado (-naja)</option>
+                <option value="tekuane">Negación Futuro (-tekuane)</option>
+            </select>
+        </div>
+
+        <button type="button" onclick="conjugar()">Conjugar Verbo</button>
+
+        <div id="resultado" class="resultado-box" style="display:none;"></div>
+    </div>
+
+    <!-- 3. BASE DE DATOS -->
+    <div class="card">
+        <h3>3. Diccionario de Verbos Guardados</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Warao</th>
+                    <th>Raíz</th>
+                    <th>Español</th>
+                </tr>
+            </thead>
+            <tbody id="tablaVerbos">
+                <!-- Se puebla dinámicamente -->
+            </tbody>
+        </table>
+    </div>
 
     <script>
-        // Reglas de sufijos
-        const sufijos = {
-            'pres': 'ya',
-            'pas_rec': 'ae',
-            'pas_rem': 'a',
-            'fut': 'te',
-            'imp_sing': 'nu',
-            'imp_pl': 'kutu',
-            'neg_pres': 'naja',
-            'neg_fut': 'tekuane'
+        let baseDeDatos = [];
+
+        window.onload = function() {
+            fetch('verbos.json')
+                .then(res => res.json())
+                .then(datosJSON => {
+                    const datosLocales = JSON.parse(localStorage.getItem('verbosLocales')) || [];
+                    baseDeDatos = [...datosJSON, ...datosLocales];
+                    actualizarInterfaz();
+                })
+                .catch(err => {
+                    baseDeDatos = JSON.parse(localStorage.getItem('verbosLocales')) || [];
+                    actualizarInterfaz();
+                });
         };
 
-        function conjugar() {
-            let raiz = document.getElementById('raiz').value.trim().toLowerCase();
-            let tiempo = document.getElementById('tiempo').value;
-            let resultadoDiv = document.getElementById('resultado');
+        function guardarVerbo() {
+            const warao = document.getElementById('inputWarao').value.trim();
+            const raiz = document.getElementById('inputRaiz').value.trim().toLowerCase();
+            const espanol = document.getElementById('inputEspanol').value.trim();
 
-            if (!raiz) {
-                resultadoDiv.innerText = "Por favor ingresa una raíz verbal.";
+            if (!warao || !raiz || !espanol) {
+                alert("Por favor completa todos los campos.");
                 return;
             }
 
-            // Regla morfofonémica simple: si termina en vocal idéntica al sufijo, une o mantiene
-            let sufijo = sufijos[tiempo];
-            let conjugacion = raiz + "-" + sufijo;
+            const nuevoVerbo = { warao: warao, raiz: raiz, espanol: espanol };
+            baseDeDatos.push(nuevoVerbo);
+            
+            let datosLocales = JSON.parse(localStorage.getItem('verbosLocales')) || [];
+            datosLocales.push(nuevoVerbo);
+            localStorage.setItem('verbosLocales', JSON.stringify(datosLocales));
 
-            // Formato final limpia (sin guion en el despliegue final si prefieres)
-            let verboConjugado = raiz + sufijo;
+            document.getElementById('inputWarao').value = '';
+            document.getElementById('inputRaiz').value = '';
+            document.getElementById('inputEspanol').value = '';
 
-            resultadoDiv.innerText = `Resultado: ${verboConjugado} (${conjugacion})`;
+            actualizarInterfaz();
+            alert(`Verbo "${warao}" registrado correctamente.`);
         }
-    </script> 
-    // Variable global para almacenar los verbos
-let baseDeDatos = [];
 
-// Cargar la base de datos al iniciar la página
-fetch('verbos.json')
-    .then(response => response.json())
-    .then(data => {
-        baseDeDatos = data;
-        console.log("Base de datos cargada:", baseDeDatos);
-    })
-    .catch(error => console.error("Error al cargar JSON:", error));
+        function actualizarInterfaz() {
+            poblarSelect();
+            poblarTabla();
+        }
+
+        function poblarSelect() {
+            const select = document.getElementById('selectVerbo');
+            select.innerHTML = '<option value="">-- Selecciona un verbo --</option>';
+
+            baseDeDatos.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.raiz;
+                opt.textContent = `${item.warao} (${item.espanol})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function poblarTabla() {
+            const tbody = document.getElementById('tablaVerbos');
+            tbody.innerHTML = '';
+
+            if (baseDeDatos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No hay verbos registrados aún.</td></tr>';
+                return;
+            }
+
+            baseDeDatos.forEach(item => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td><strong>${item.warao}</strong></td>
+                    <td>${item.raiz}</td>
+                    <td>${item.espanol}</td>
+                `;
+                tbody.appendChild(fila);
+            });
+        }
+
+        function conjugar() {
+            const raiz = document.getElementById('selectVerbo').value;
+            const sufijo = document.getElementById('selectTiempo').value;
+            const resDiv = document.getElementById('resultado');
+
+            if (!raiz) {
+                alert("Selecciona un verbo primero.");
+                return;
+            }
+
+            const palabraConjugada = raiz + sufijo;
+            resDiv.style.display = 'block';
+            resDiv.innerHTML = `Conjugación: <span style="color:var(--aguar-orinoco); font-size:1.2em;">${palabraConjugada}</span> (${raiz} + ${sufijo})`;
+        }
+
+        function descargarJSON() {
+            if (baseDeDatos.length === 0) {
+                alert("No hay verbos para descargar.");
+                return;
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(baseDeDatos, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "verbos.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
 </body>
 </html>
